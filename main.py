@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton,
     QFileDialog, QCheckBox, QLineEdit, QComboBox, QLabel)
 from mesure_et_log import *
@@ -66,6 +66,7 @@ class MainWindow(QMainWindow):
         self.checkbox1_state = False
         self.checkbox2_state = False
         self.checkbox3_state = False
+        self.checkbox4_state = False
 
         # Variable pour stocker les textes des champs
         self.text_field_machine = ""
@@ -127,6 +128,11 @@ class MainWindow(QMainWindow):
         self.text_field_frequence.textChanged.connect(self.update_text_field_content_periode)
         layout.addWidget(self.text_field_frequence)
 
+        # Case à cocher si prise de focus à chaque snap
+        self.checkbox4 = QCheckBox("Focus à chaque Snap")
+        self.checkbox4.stateChanged.connect(self.update_checkbox4_state)
+        layout.addWidget(self.checkbox4)
+
         # Menu déroulant
         self.combo_box = QComboBox()
         self.combo_box.addItems(["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10", "A11", "A12",
@@ -168,6 +174,9 @@ class MainWindow(QMainWindow):
     def update_checkbox3_state(self, state):
         self.checkbox3_state = state == 2
 
+    def update_checkbox4_state(self, state):
+        self.checkbox4_state = state == 2
+
     def update_text_field_content_machine(self, text):
         self.text_field_machine = text
 
@@ -186,6 +195,7 @@ class MainWindow(QMainWindow):
                       self.checkbox1_state,
                       self.checkbox2_state,
                       self.checkbox3_state,
+                      self.checkbox4_state,
                       self.text_field_machine,
                       self.text_field_iteration,
                       self.text_field_frequence,
@@ -198,6 +208,7 @@ class MainWindow(QMainWindow):
                                self.checkbox1_state,
                                self.checkbox2_state,
                                self.checkbox3_state,
+                               self.checkbox4_state,
                                self.text_field_iteration,
                                self.text_field_frequence)
 

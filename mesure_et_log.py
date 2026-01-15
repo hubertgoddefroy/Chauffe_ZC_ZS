@@ -6,7 +6,7 @@ from openpyxl import Workbook
 
 
 def mesure_chauffe_ZC_snap(chemin_installation_ZS, chemin_dossier_enregistrement_image, nom_machine, puits, case_455,
-                           case_730, case_455_730, nombre_iteration, frequence_enregistrement):
+                           case_730, case_455_730, prise_focus, nombre_iteration, frequence_enregistrement):
     process = subprocess.Popen(
         'cmd.exe',
         stdin=subprocess.PIPE,
@@ -67,22 +67,51 @@ def mesure_chauffe_ZC_snap(chemin_installation_ZS, chemin_dossier_enregistrement
                 onglet1_temp = wb_temp.create_sheet(title="455")
                 onglet2_temp = wb_temp.create_sheet(title="730")
 
-        ### Prise des clichés dans une ou deux longueurs d'onde
-        if case_455 or case_455_730:
-            process.stdin.write(fr'snap 455' + '\n')
-            process.stdin.flush()
-            for i in range(3):
-                out = process.stdout.readline()
-                print(out.strip())
-            time.sleep(3)
+        ### Prise des clichés dans une ou deux longueurs d'onde avec prise de focus ou non
+        if prise_focus:
+            if case_455 or case_455_730:
+                process.stdin.write(fr'goto ' + puits + '\n')
+                process.stdin.flush()
+                for i in range(4):
+                    out = process.stdout.readline()
+                    print(out.strip())
+                # time.sleep(7)
+                process.stdin.write(fr'snap 455' + '\n')
+                process.stdin.flush()
+                for i in range(3):
+                    out = process.stdout.readline()
+                    print(out.strip())
+                time.sleep(3)
 
-        if case_730 or case_455_730:
-            process.stdin.write(fr'snap 730' + '\n')
-            process.stdin.flush()
-            for i in range(3):
-                out = process.stdout.readline()
-                print(out.strip())
-            time.sleep(3)
+            if case_730 or case_455_730:
+                process.stdin.write(fr'goto ' + puits + '\n')
+                process.stdin.flush()
+                for i in range(4):
+                    out = process.stdout.readline()
+                    print(out.strip())
+                # time.sleep(7)
+                process.stdin.write(fr'snap 730' + '\n')
+                process.stdin.flush()
+                for i in range(3):
+                    out = process.stdout.readline()
+                    print(out.strip())
+                time.sleep(3)
+        else:
+            if case_455 or case_455_730:
+                process.stdin.write(fr'snap 455' + '\n')
+                process.stdin.flush()
+                for i in range(3):
+                    out = process.stdout.readline()
+                    print(out.strip())
+                time.sleep(3)
+
+            if case_730 or case_455_730:
+                process.stdin.write(fr'snap 730' + '\n')
+                process.stdin.flush()
+                for i in range(3):
+                    out = process.stdout.readline()
+                    print(out.strip())
+                time.sleep(3)
 
         ### Récupération de l'intensité représentative ainsi que de la température des clichés
         if case_455 or case_455_730:
@@ -127,10 +156,16 @@ def mesure_chauffe_ZC_snap(chemin_installation_ZS, chemin_dossier_enregistrement
                 int((i_boucle + 1) / int(frequence_enregistrement))) + ".xlsx")
 
         ### Attente pour espacer les prises de cliché de 10 secondes
-        if case_455_730:
-            time.sleep(4)
+        if prise_focus:
+            if case_455_730:
+                time.sleep(1)
+            else:
+                time.sleep(3.6)
         else:
-            time.sleep(6.6)
+            if case_455_730:
+                time.sleep(4)
+            else:
+                time.sleep(6.6)
         print(i_boucle + 1)
 
     ### Enregistrement du fichier excel
@@ -148,7 +183,7 @@ def mesure_chauffe_ZC_snap(chemin_installation_ZS, chemin_dossier_enregistrement
     process.stdin.close()
 
 
-def log_de_mesure(install_dir, save_dir, checkbox1_state, checkbox2_state, checkbox3_state, text_field_machine,
+def log_de_mesure(install_dir, save_dir, checkbox1_state, checkbox2_state, checkbox3_state, checkbox4_state, text_field_machine,
                   text_field_iteration, text_field_frequence, combo_box_selection):
     fichier_texte = save_dir + "/Calibration_" + text_field_machine + "_" + combo_box_selection + ".log"
 
@@ -161,6 +196,7 @@ def log_de_mesure(install_dir, save_dir, checkbox1_state, checkbox2_state, check
               "Nom Machine : " + text_field_machine,
               "Nombre d'intérations : " + text_field_iteration,
               "Période enregistrement : " + text_field_frequence,
+              "Focus à chaque snap ? " + str(checkbox4_state),
               "Puits acquis : " + combo_box_selection,
               "--------------------------\n"]
     with open(fichier_texte, 'w', encoding='utf-8') as fichier:
