@@ -71,7 +71,8 @@ class MainWindow(QMainWindow):
         # Variable pour stocker les textes des champs
         self.text_field_machine = ""
         self.text_field_iteration = ""
-        self.text_field_periode = ""
+        self.text_field_frequence = ""
+        self.text_field_frequence_snap = ""
 
         # Variable pour stocker l'option sélectionnée
         self.combo_box_selection = ""
@@ -124,7 +125,7 @@ class MainWindow(QMainWindow):
 
         # Champ texte
         self.text_field_frequence = QLineEdit()
-        self.text_field_frequence.setPlaceholderText("Période d'enregistrement")
+        self.text_field_frequence.setPlaceholderText("Période d'enregistrement du .csv")
         self.text_field_frequence.textChanged.connect(self.update_text_field_content_periode)
         layout.addWidget(self.text_field_frequence)
 
@@ -132,6 +133,12 @@ class MainWindow(QMainWindow):
         self.checkbox4 = QCheckBox("Focus à chaque Snap")
         self.checkbox4.stateChanged.connect(self.update_checkbox4_state)
         layout.addWidget(self.checkbox4)
+
+        # Champ texte
+        self.text_field_frequence_snap = QLineEdit()
+        self.text_field_frequence_snap.setPlaceholderText("Période d'enregistrement des snap")
+        self.text_field_frequence_snap.textChanged.connect(self.update_text_field_content_periode_snap)
+        layout.addWidget(self.text_field_frequence_snap)
 
         # Menu déroulant
         self.combo_box = QComboBox()
@@ -186,6 +193,9 @@ class MainWindow(QMainWindow):
     def update_text_field_content_periode(self, text):
         self.text_field_frequence = text
 
+    def update_text_field_content_periode_snap(self, text):
+        self.text_field_frequence_snap = text
+
     def update_combo_box_selection(self, text):
         self.combo_box_selection = text
 
@@ -210,7 +220,8 @@ class MainWindow(QMainWindow):
                                self.checkbox3_state,
                                self.checkbox4_state,
                                self.text_field_iteration,
-                               self.text_field_frequence)
+                               self.text_field_frequence,
+                               self.text_field_frequence_snap)
 
 
 if __name__ == "__main__":

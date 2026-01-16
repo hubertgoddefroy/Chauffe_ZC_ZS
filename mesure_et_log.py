@@ -1,12 +1,15 @@
+import os
 import time
+import shutil
 import subprocess
 from manipulation_image import *
 from traitement_image import *
 from openpyxl import Workbook
+from manipulation_image import creation_dossier_snap
 
 
 def mesure_chauffe_ZC_snap(chemin_installation_ZS, chemin_dossier_enregistrement_image, nom_machine, puits, case_455,
-                           case_730, case_455_730, prise_focus, nombre_iteration, frequence_enregistrement):
+                           case_730, case_455_730, prise_focus, nombre_iteration, frequence_enregistrement, frequence_snap):
     process = subprocess.Popen(
         'cmd.exe',
         stdin=subprocess.PIPE,
@@ -126,6 +129,50 @@ def mesure_chauffe_ZC_snap(chemin_installation_ZS, chemin_dossier_enregistrement
             temperature_image_730 = obtenir_temperature(chemin_image_730)
             intensite_image_730 = obtenir_intensite(25, 25, chemin_image_730)
 
+        if i_boucle % int(frequence_snap) == 0:
+            if case_455 or case_455_730:
+                chemin_source_complet = chemin_image_455
+                dossier_dest_str = chemin_dossier_enregistrement_image + "\\Snap_Chauffe_" + text_field_machine + "_" + combo_box_selection
+
+                chemin_dest_complet = os.path.join(dossier_dest_str, nom_image + str(i_boucle))
+
+                # Vérifie si le dossier existe, sinon le crée
+                if not os.path.exists(dossier_dest_str):
+                    os.makedirs(dossier_dest_str)
+                    print(f"Dossier créé : {dossier_dest_str}")
+
+                try:
+                    shutil.copy2(chemin_source_complet, chemin_dest_complet)
+                    print(f"Image copiée avec succès vers : {chemin_dest_complet}")
+
+                except FileNotFoundError:
+                    print(f"Erreur : Le fichier n'a pas été trouvé ici : {chemin_source_complet}")
+                except PermissionError:
+                    print("Erreur : Vous n'avez pas la permission d'écrire dans ce dossier.")
+                except Exception as e:
+                    print(f"Une erreur inattendue est survenue : {e}")
+            if case_730 or case_455_730:
+                chemin_source_complet = chemin_image_730
+                dossier_dest_str = chemin_dossier_enregistrement_image + "\\Snap_Chauffe_" + text_field_machine + "_" + combo_box_selection
+
+                chemin_dest_complet = os.path.join(dossier_dest_str, nom_image + str(i_boucle))
+
+                # Vérifie si le dossier existe, sinon le crée
+                if not os.path.exists(dossier_dest_str):
+                    os.makedirs(dossier_dest_str)
+                    print(f"Dossier créé : {dossier_dest_str}")
+
+                try:
+                    shutil.copy2(chemin_source_complet, chemin_dest_complet)
+                    print(f"Image copiée avec succès vers : {chemin_dest_complet}")
+
+                except FileNotFoundError:
+                    print(f"Erreur : Le fichier n'a pas été trouvé ici : {chemin_source_complet}")
+                except PermissionError:
+                    print("Erreur : Vous n'avez pas la permission d'écrire dans ce dossier.")
+                except Exception as e:
+                    print(f"Une erreur inattendue est survenue : {e}")
+
         ### Suppression des clichés pour éviter la saturation du stockage
         if case_455 or case_455_730:
             os.remove(chemin_image_455)
@@ -202,3 +249,5 @@ def log_de_mesure(install_dir, save_dir, checkbox1_state, checkbox2_state, check
     with open(fichier_texte, 'w', encoding='utf-8') as fichier:
         for ligne in lignes:
             fichier.write(ligne + "\n")
+
+    creation_dossier_snap(save_dir, "Snap_Chauffe_" + text_field_machine + "_" + combo_box_selection)

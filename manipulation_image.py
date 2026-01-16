@@ -35,3 +35,12 @@ def obtenir_chemin_image_plus_recente_motif(dossier, motif, extension):
     else:
         fichier_recent = max(fichiers, key=os.path.getmtime)
         return fichier_recent
+
+def creation_dossier_snap(repertoire, nom_dossier):
+    chemin_complet = os.path.join(repertoire, nom_dossier)
+    try:
+        os.makedirs(chemin_complet, exist_ok=True)
+        print(f"Dossier créé : {chemin_complet}")
+    except OSError as error:
+        print(f"Erreur lors de la création : {error}")
+    return chemin_complet
