@@ -209,7 +209,8 @@ class MainWindow(QMainWindow):
                       self.text_field_machine,
                       self.text_field_iteration,
                       self.text_field_frequence,
-                      self.combo_box_selection)
+                      self.combo_box_selection,
+                      self.text_field_frequence_snap)
 
         mesure_chauffe_ZC_snap(self.install_dir,
                                self.save_dir,

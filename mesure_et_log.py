@@ -23,7 +23,7 @@ def mesure_chauffe_ZC_snap(chemin_installation_ZS, chemin_dossier_enregistrement
     process.stdin.write(
         chemin_installation_ZS + "/bin/ZymoCubeCtrl.exe " + chemin_installation_ZS + "/etc/ZymoCubeCtrl.ini" + '\n')
     process.stdin.flush()
-    time.sleep(15)
+    time.sleep(30)
     process.stdin.write(fr'reset AxHV_ZC_rfl_v1' + '\n')
     process.stdin.flush()
     for i in range(13):
@@ -78,7 +78,7 @@ def mesure_chauffe_ZC_snap(chemin_installation_ZS, chemin_dossier_enregistrement
                 for i in range(4):
                     out = process.stdout.readline()
                     print(out.strip())
-                # time.sleep(7)
+                time.sleep(4)
                 process.stdin.write(fr'snap 455' + '\n')
                 process.stdin.flush()
                 for i in range(3):
@@ -92,7 +92,7 @@ def mesure_chauffe_ZC_snap(chemin_installation_ZS, chemin_dossier_enregistrement
                 for i in range(4):
                     out = process.stdout.readline()
                     print(out.strip())
-                # time.sleep(7)
+                time.sleep(4)
                 process.stdin.write(fr'snap 730' + '\n')
                 process.stdin.flush()
                 for i in range(3):
@@ -132,9 +132,9 @@ def mesure_chauffe_ZC_snap(chemin_installation_ZS, chemin_dossier_enregistrement
         if i_boucle % int(frequence_snap) == 0:
             if case_455 or case_455_730:
                 chemin_source_complet = chemin_image_455
-                dossier_dest_str = chemin_dossier_enregistrement_image + "\\Snap_Chauffe_" + text_field_machine + "_" + combo_box_selection
+                dossier_dest_str = chemin_dossier_enregistrement_image + "\\Snap_Chauffe_" + nom_machine + "_" + puits
 
-                chemin_dest_complet = os.path.join(dossier_dest_str, nom_image + str(i_boucle))
+                chemin_dest_complet = os.path.join(dossier_dest_str, puits + "_455(" + str(temperature_image_455) + ")_" + str(int(intensite_image_455)) + "_" + str(i_boucle) + ".tif")
 
                 # Vérifie si le dossier existe, sinon le crée
                 if not os.path.exists(dossier_dest_str):
@@ -153,9 +153,9 @@ def mesure_chauffe_ZC_snap(chemin_installation_ZS, chemin_dossier_enregistrement
                     print(f"Une erreur inattendue est survenue : {e}")
             if case_730 or case_455_730:
                 chemin_source_complet = chemin_image_730
-                dossier_dest_str = chemin_dossier_enregistrement_image + "\\Snap_Chauffe_" + text_field_machine + "_" + combo_box_selection
+                dossier_dest_str = chemin_dossier_enregistrement_image + "\\Snap_Chauffe_" + nom_machine + "_" + puits
 
-                chemin_dest_complet = os.path.join(dossier_dest_str, nom_image + str(i_boucle))
+                chemin_dest_complet = os.path.join(dossier_dest_str, puits + "_730(" + str(temperature_image_730) + ")_" + str(int(intensite_image_730)) + "_" + str(i_boucle) + ".tif")
 
                 # Vérifie si le dossier existe, sinon le crée
                 if not os.path.exists(dossier_dest_str):
@@ -231,7 +231,7 @@ def mesure_chauffe_ZC_snap(chemin_installation_ZS, chemin_dossier_enregistrement
 
 
 def log_de_mesure(install_dir, save_dir, checkbox1_state, checkbox2_state, checkbox3_state, checkbox4_state, text_field_machine,
-                  text_field_iteration, text_field_frequence, combo_box_selection):
+                  text_field_iteration, text_field_frequence, combo_box_selection, text_field_frequence_snap):
     fichier_texte = save_dir + "/Calibration_" + text_field_machine + "_" + combo_box_selection + ".log"
 
     lignes = ["\n--- Données récupérées ---",
@@ -241,9 +241,10 @@ def log_de_mesure(install_dir, save_dir, checkbox1_state, checkbox2_state, check
               "730 ? " + str(checkbox2_state),
               "455 & 730 ? " + str(checkbox3_state),
               "Nom Machine : " + text_field_machine,
-              "Nombre d'intérations : " + text_field_iteration,
-              "Période enregistrement : " + text_field_frequence,
+              "Nombre d'itérations : " + text_field_iteration,
+              "Période enregistrement du .csv : " + text_field_frequence,
               "Focus à chaque snap ? " + str(checkbox4_state),
+              "Période enregistrement des snap : " + text_field_frequence_snap,
               "Puits acquis : " + combo_box_selection,
               "--------------------------\n"]
     with open(fichier_texte, 'w', encoding='utf-8') as fichier:
